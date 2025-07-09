@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronic Kidney Disease Prediction</title>
+    <script type="module" src="https://pyscript.net/snapshots/2024.9.2/core.js"></script>
+    <!--<link rel="icon" type="image/x-icon" href="imgs/aerislogo2.png">-->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700&family=Ather&display=swap" rel="stylesheet">
+    <style>
+        .py-error {
+            display:none;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .header-text {
+            font-family: 'Ather', sans-serif;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .divider {
+            border: 0;
+            height: 1px;
+            background-color: black;
+            margin: 10px 0 20px 0;
+        }
+        
+        .main-heading {
+            font-family: 'Syne', sans-serif;
+            font-size: 6rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .content-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .description {
+            flex: 1;
+            max-width: 70%;
+        }
+        
+        .start-button {
+            background-color: #306239;
+            color: #fffaf1;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            border-color: #fffaf1
+        }
+        
+        .start-button:hover {
+            background-color: #fffaf1;
+            color: #306239;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 12px;
+        }
+
+        .form-container {
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display:none;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        input[type="number"], 
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+        }
+        .radio-option input {
+            margin-right: 8px;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+            height: 30px;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9;
+            height: 30px;
+        }
+        .btn-secondary {
+            background-color: #f1f1f1;
+            color: #333;
+            border: 1px solid #ddd;
+            height: 30px;
+        }
+        .btn-secondary:hover {
+            background-color: #e1e1e1;
+            height: 30px;
+        }
+
+
+        .required:after {
+            content: " *";
+            color: red;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+
+
+        .report-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        .section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+        .patient-info {
+            background: #e6f2ff;
+        }
+        .prediction {
+            background: #fff8e6;
+        }
+        .symptom-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .present {
+            color: #cc0000;
+            font-weight: bold;
+        }
+        .absent {
+            color: #009933;
+        }
+        .prediction-result {
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-size: 1.2em;
+        }
+        .high-risk {
+            background-color: #ffdddd;
+            color: #cc0000;
+            border: 2px solid #cc0000;
+        }
+        .low-risk {
+            background-color: #ddffdd;
+            color: #009933;
+            border: 2px solid #009933;
+        }
+        .probability-meter {
+            height: 20px;
+            background: #eee;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        .probability-bar-one {
+            height: 100%;
+            background: linear-gradient(to right, #009933, #ffcc00, #cc0000);
+        }
+        .probability-bar-two {
+            height: 100%;
+            background: linear-gradient(to right, #009933, #ffcc00, #cc0000);
+        }
+        .probability-value {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<script>
+    var userdata
+    var validation = 0
+    function startbtn() {
+        document.getElementById("startpage").style.display = "none"
+        document.getElementById("ckdform").style.display = "block"
+    }
+    const symp = ["_hypertension", "_diabetes", "_cad", "_edema", "_anemia", "_appetite"]
+    var boredom = 0
+    function assess() {
+        setTimeout(forceresult, 2000)
+    }
+     
+    function forceresult() {
+        document.getElementById("ckdform").style.display = "none"
+        document.getElementById("final_report").style.display = "block"
+        document.getElementById("report-date").innerHTML = new Date().toLocaleDateString()
+        document.getElementById("patient-name").innerHTML = userdata[7]
+        document.getElementById("patient-gender").innerHTML = userdata[8]
+        document.getElementById("patient-age").innerHTML = userdata[0] + " years"
+
+        document.getElementById(symp[0]).innerHTML = parseInt(userdata[1]) == 1 ? "Present" : "Absent"
+        document.getElementById(symp[0]).className = parseInt(userdata[1]) == 1 ? "present" : "absent"
+        document.getElementById(symp[1]).innerHTML = parseInt(userdata[2]) == 1 ? "Present" : "Absent"
+        document.getElementById(symp[1]).className = parseInt(userdata[2]) == 1 ? "present" : "absent"
+        document.getElementById(symp[2]).innerHTML = parseInt(userdata[3]) == 1 ? "Present" : "Absent"
+        document.getElementById(symp[2]).className = parseInt(userdata[3]) == 1 ? "present" : "absent"
+        document.getElementById(symp[3]).innerHTML = parseInt(userdata[4]) == 1 ? "Present" : "Absent"
+        document.getElementById(symp[3]).className = parseInt(userdata[4]) == 1 ? "present" : "absent"
+        document.getElementById(symp[4]).innerHTML = parseInt(userdata[5]) == 1 ? "Present" : "Absent"
+        document.getElementById(symp[4]).className = parseInt(userdata[5]) == 1 ? "present" : "absent"
+        document.getElementById("_appetite").innerHTML = parseInt(userdata[6]) == 0 ? "Good" : "Poor"
+        document.getElementById("_appetite").className = parseInt(userdata[6]) == 0 ? "absent" : "present"
+    
+        document.getElementById("probability-value-one").innerHTML = Math.round(parseFloat(document.getElementById("result_one_i").innerHTML)*100) + "%"
+        document.getElementById("probability-bar-one").style.width = Math.round(parseFloat(document.getElementById("result_one_i").innerHTML)*100) + "%"
+        document.getElementById("probability-value-two").innerHTML = Math.round(parseFloat(document.getElementById("result_two_i").innerHTML)*100) + "%"
+        document.getElementById("probability-bar-two").style.width = Math.round(parseFloat(document.getElementById("result_two_i").innerHTML)*100) + "%"
+
+        if (document.getElementById("result_one_d").innerHTML.includes("True")) {
+            document.getElementById("prediction-result-one").innerHTML = "High Risk of CKD"
+            document.getElementById("prediction-result-one").className = "prediction-result high-risk"
+        } else {
+            document.getElementById("prediction-result-one").innerHTML = "Low Risk of CKD"
+            document.getElementById("prediction-result-one").className = "prediction-result low-risk"
+        }
+        if (document.getElementById("result_two_d").innerHTML.includes("True")) {
+            document.getElementById("prediction-result-two").innerHTML = "High Risk of CKD"
+            document.getElementById("prediction-result-two").className = "prediction-result high-risk"
+        } else {
+            document.getElementById("prediction-result-two").innerHTML = "Low Risk of CKD"
+            document.getElementById("prediction-result-two").className = "prediction-result low-risk"
+        }
+    }
+
+    
+    
+    function check() {
+        validation = 1
+        try {
+            userdata = [parseInt(document.getElementById('age').value),
+        document.querySelector('input[name="hypertension"]:checked').value,
+        document.querySelector('input[name="diabetes"]:checked').value,
+        document.querySelector('input[name="cad"]:checked').value,
+        document.querySelector('input[name="pedal_edema"]:checked').value,
+        document.querySelector('input[name="anemia"]:checked').value,
+        document.getElementById('appetite').value,
+        document.getElementById('user_name').value,
+        document.getElementById('user_gender').value]
+        userdata[0] = userdata[0].toString()
+        } catch (error) {
+            document.getElementById("statusmsg").innerHTML = "Please fill in all fields."
+            document.getElementById("submit").style.display = "none"
+        }
+        if (userdata != undefined) {
+            for (i in userdata) {
+            if (userdata[i] == "NaN" || userdata[i] == "") {
+                validation = 0
+                document.getElementById("statusmsg").innerHTML = "Please fill in all fields."
+                document.getElementById("submit").style.display = "none"
+                break
+            }
+        }
+        if (validation == 1 && parseInt(userdata[0])<0) {
+            validation = 0
+            document.getElementById("statusmsg").innerHTML = "Unacceptable age."
+            document.getElementById("submit").style.display = "none"
+        }
+
+        if (validation == 1) {
+            document.getElementById("submit").style.display = "block"
+            document.getElementById("statusmsg").innerHTML = ""
+        }else{
+            document.getElementById("submit").style.display = "none"
+        }
+        }
+        
+    }
+    setInterval(check, 200)
+    
+</script>
+<body style="background-color: #fffaf1;">
+    <div class="header-text">CKD Prediction</div>
+    <hr class="divider">
+    <div id="startpage" style="display: block;">
+        
+        <h1 class="main-heading">EMPOWER YOUR HEALTH</h1>
+    
+        <div class="content-container">
+            <p class="description">Assess your risk with our innovative tool and take control of your kidney health.</p>
+            <button class="start-button" onclick="startbtn()">START NOW</button>
+        </div>
+    </div>
+
+    <div class="form-container" id="ckdform">
+        <form id="ckdForm">
+            <!-- Name -->
+            <div class="form-group">
+                <label for="name" class="required">Name</label>
+                <input type="text" id="user_name" name="user_name" required>
+            </div>
+
+            <!-- Gender -->
+            <div class="form-group">
+                <label for="gender" class="required">Gender</label>
+                <input type="text" id="user_gender" name="user_gender" required>
+            </div>
+
+            <!-- Age -->
+            <div class="form-group">
+                <label for="age" class="required">Age</label>
+                <input type="number" id="age" name="age" min="0" max="150" required>
+            </div>
+            
+            <!-- Hypertension -->
+            <div class="form-group">
+                <label class="required">Hypertension</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="htn_yes" name="hypertension" value="1" required>
+                        <label for="htn_yes">Yes</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="htn_no" name="hypertension" value="0">
+                        <label for="htn_no">No</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Diabetes Mellitus -->
+            <div class="form-group">
+                <label class="required">Diabetes Mellitus</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="dm_yes" name="diabetes" value="1" required>
+                        <label for="dm_yes">Yes</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="dm_no" name="diabetes" value="0">
+                        <label for="dm_no">No</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Coronary Artery Disease -->
+            <div class="form-group">
+                <label class="required">Coronary Artery Disease</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="cad_yes" name="cad" value="1" required>
+                        <label for="cad_yes">Yes</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="cad_no" name="cad" value="0">
+                        <label for="cad_no">No</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pedal Edema -->
+            <div class="form-group">
+                <label class="required">Pedal Edema</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="pe_yes" name="pedal_edema" value="1" required>
+                        <label for="pe_yes">Yes</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="pe_no" name="pedal_edema" value="0">
+                        <label for="pe_no">No</label>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+            <!-- Anemia -->
+            <div class="form-group">
+                <label class="required">Anemia</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="anemia_yes" name="anemia" value="1" required>
+                        <label for="anemia_yes">Yes</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="anemia_no" name="anemia" value="0">
+                        <label for="anemia_no">No</label>
+                    </div>
+                </div>
+            </div>
+            <!-- Appetite -->
+            <div class="form-group">
+                <label class="required">Appetite</label>
+                <select id="appetite" name="appetite" required>
+                    <option value="" disabled selected>Select your appetite</option>
+                    <option value="0">Good</option>
+                    <option value="1">Poor</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary" onclick="assess()" id="submit" style="display: none;" py-click="submitbtn">Assess My Risk</button>
+                <button type="reset" class="btn btn-secondary" style="display: inline;">Clear Form</button>
+            </div>
+            <p id="statusmsg" style="color: red;font-family: Arial, Helvetica, sans-serif;font-size: medium;"></p>
+        </form>
+    </div>
+
+     <div class="report-container" id="final_report" style="display: none;">
+        <div class="header">
+            <h1 style="color: #0066cc;">Chronic Kidney Disease Report</h1>
+            <p>Generated on: <span id="report-date"></span></p>
+        </div>
+        
+        <div class="section patient-info">
+            <h2 style="color: #004080; margin-top: 0;">Patient Information</h2>
+            <div class="symptom-item">
+                <span><strong>Name:</strong></span>
+                <span id="patient-name"></span>
+            </div>
+            <div class="symptom-item">
+                <span><strong>Gender:</strong></span>
+                <span id="patient-gender"></span>
+            </div>
+            <div class="symptom-item">
+                <span><strong>Age:</strong></span>
+                <span id="patient-age"></span>
+            </div>
+        </div>
+        
+
+
+
+        <div class="section">
+            <h2 style="color: #004080; margin-top: 0;">Symptoms Assessment</h2>
+            <div class="symptom-item">
+                <span>Hypertension:</span>
+                <span id="_hypertension"></span>
+            </div>
+            <div class="symptom-item">
+                <span>Diabetes Mellitus:</span>
+                <span id="_diabetes"></span>
+            </div>
+            <div class="symptom-item">
+                <span>Coronary Artery Disease:</span>
+                <span id="_cad"></span>
+            </div>
+            <div class="symptom-item">
+                <span>Appetite:</span>
+                <span id="_appetite"></span>
+            </div>
+            <div class="symptom-item">
+                <span>Pedal Edema:</span>
+                <span id="_edema"></span>
+            </div>
+            <div class="symptom-item">
+                <span>Anemia:</span>
+                <span id="_anemia"></span>
+            </div>
+        </div>
+        
+        <div class="section prediction">
+            <h2 style="color: #004080; margin-top: 0;">Algorithm Prediction</h2>
+            
+            <div>
+                <h3 style="color:#001b35;">High Sensitivity Voting Classifier</h3>
+                <strong>Probability:</strong>
+                <div class="probability-meter">
+                    <div id="probability-bar-one" class="probability-bar-one" style="width: 78%"></div>
+                </div>
+                <div class="probability-value">
+                    <span id="probability-value-one"></span> likelihood of CKD
+                </div>
+                <div id="prediction-result-one">
+
+                </div>
+            </div>
+            
+                
+            
+            <div>
+                <h3 style="color:#001b35;">Full Ensemble Voting Classifier</h3>
+                <strong>Probability:</strong>
+                <div class="probability-meter">
+                    <div id="probability-bar-two" class="probability-bar-two" style="width: 78%"></div>
+                </div>
+                <div class="probability-value">
+                    <span id="probability-value-two"></span> likelihood of CKD
+                </div>
+                <div id="prediction-result-two">
+
+                </div>
+            </div>
+
+            
+            
+        </div>
+        
+        <div class="footer">
+            <p>This report is generated automatically. Please consult medical profession for detailed analysis.</p>
+        </div>
+    </div>
+
+
+    <div style="display: none;" id="resultfeedback"><p id="result_one_d"></p><p id="result_one_i"></p><p id="result_two_d"></p><p id="result_two_i"></p></div>
+    <py-script src="ckd_prediction.py" config="pyscript.json"></py-script>
+</body>
+</html>
